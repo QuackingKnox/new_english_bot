@@ -179,13 +179,7 @@ async def confirm_words(call: CallbackQuery):
     ui_lang = user[1]  # Язык интерфейса
     learning_lang = user[2] if user[2] else "en"  # Язык изучения
 
-    # ✅ Отладка: проверяем, вызывается ли функция
-    print(f"✅ confirm_words вызван для пользователя {user_id}")
-
-    # Получаем выбранные пользователем слова
     selected_words = selected_words_dict.get(user_id, set())
-
-    print(f"Выбранные слова: {selected_words}")  # Отладка
 
     if not selected_words:
         await call.answer(LOCALS[ui_lang]["no_words_selected"], show_alert=True)

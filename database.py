@@ -106,8 +106,6 @@ async def save_selected_words_to_db(user_id, selected_words, learning_lang, tran
     """Сохраняет выбранные пользователем слова в БД с информацией о языке перевода."""
     async with aiosqlite.connect(DB_PATH) as db:
         for word in selected_words:
-            print(f'🔥 Запись слова "{word}" в БД (учим: {learning_lang}, переводим на: {translation_lang})')  # Отладка
-
             await db.execute(
                 "INSERT INTO words (user_id, word, translation, status, type, learning_lang, translation_lang) VALUES (?, ?, ?, ?, ?, ?, ?)",
                 (user_id, word, "", "Active", "other", learning_lang, translation_lang)
