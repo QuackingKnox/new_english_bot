@@ -1,0 +1,7 @@
+import os
+
+
+BOT_TOKEN = '7398086112:AAHsFM-ygi29NZrRQwC8ODM8AZXNRCV9o0I'
+
+project_dir_name = os.path.dirname(os.path.abspath(__file__))
+DB_PATH = os.path.join(project_dir_name, 'database.db')
