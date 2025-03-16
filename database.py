@@ -39,6 +39,7 @@ async def create_tables():
             status TEXT CHECK(status IN ('Active', 'Learned', 'Deleted')) DEFAULT 'Active',
             type TEXT CHECK(type IN ('noun', 'adjective', 'verb', 'adverb', 'pronoun', 'other')),
             learning_lang TEXT NOT NULL,
+            translation_lang TEXT NOT NULL,
             learned_counter INTEGER DEFAULT 0,
             created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
             updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
@@ -101,16 +102,19 @@ async def update_preferences(user_id, preferences):
         await db.commit()
 
 
-async def save_selected_words_to_db(user_id, selected_words, learning_lang):
-    """Сохраняет выбранные пользователем слова в БД."""
+async def save_selected_words_to_db(user_id, selected_words, learning_lang, translation_lang):
+    """Сохраняет выбранные пользователем слова в БД с информацией о языке перевода."""
     async with aiosqlite.connect(DB_PATH) as db:
         for word in selected_words:
-            print(f'Inserting {word} for user {user_id} with learning_lang {learning_lang}')  # Отладка
+            print(f'🔥 Запись слова "{word}" в БД (учим: {learning_lang}, переводим на: {translation_lang})')  # Отладка
+
             await db.execute(
-                "INSERT INTO words (user_id, word, translation, status, type, learning_lang) VALUES (?, ?, ?, ?, ?, ?)",
-                (user_id, word, "", "Active", "other", learning_lang)
+                "INSERT INTO words (user_id, word, translation, status, type, learning_lang, translation_lang) VALUES (?, ?, ?, ?, ?, ?, ?)",
+                (user_id, word, "", "Active", "other", learning_lang, translation_lang)
             )
+
         await db.commit()
+
 
 
 async def get_user_stats(user_id):

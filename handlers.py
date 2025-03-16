@@ -24,11 +24,13 @@ selected_words_dict = {}  # Запоминаем слова пользовате
 async def send_welcome(message: types.Message):
     """Показывает пользователю статистику и главное меню."""
     user_id = message.from_user.id
+    username = message.from_user.username
+
     user = await get_user(user_id)
 
     if user is None:
         # Если пользователя нет в БД, предлагаем выбрать родной язык
-        await add_user(user_id)
+        await add_user(user_id, username)
         await message.answer(
             LOCALS["en"]["start_welcome"],
             reply_markup=generate_language_keyboard(stage="native", user_lang="en")
@@ -190,7 +192,7 @@ async def confirm_words(call: CallbackQuery):
         return
 
     # ✅ Сохраняем слова в БД
-    await save_selected_words_to_db(user_id, selected_words, learning_lang)
+    await save_selected_words_to_db(user_id, selected_words, learning_lang, ui_lang)
 
     await call.message.edit_text(
         LOCALS[ui_lang]["confirm_words_message"],
@@ -212,6 +214,7 @@ async def finish_word_selection(call: CallbackQuery):
         reply_markup=generate_notifications_keyboard(user_lang)  # Вызов готовой клавиатуры
     )
 
+
 async def set_notifications(call: CallbackQuery):
     """Сохраняет частоту уведомлений."""
     user_id = call.from_user.id
@@ -223,6 +226,7 @@ async def set_notifications(call: CallbackQuery):
     user_lang = user[1] if user else "en"
 
     await call.message.edit_text(LOCALS[user_lang]["setup_complete"])
+
 
 def register_handlers(dp: Dispatcher):
     """Регистрируем обработчики команд и коллбэков."""
