@@ -12,6 +12,8 @@ LOCALS = {
         "notify_3": "🔔 3 раза в день",
         "notify_6": "🔔 6 раз в день",
         "notify_12": "🔔 12 раз в день",
+        "support_request": "📩 Напишите свой вопрос, и администратор скоро ответит!",
+        "support_sent": "✅ Ваше сообщение отправлено в поддержку!",
         "setup_complete": "✅ Отлично! Теперь мы настроили бота для тебя. Начинаем обучение!",
         "word_set": [
             ["Яблоко", "Кот", "Собака", "Солнце", "Луна", "Стол", "Стул", "Машина"],
@@ -48,6 +50,8 @@ LOCALS = {
         "notify_6": "🔔 6 times a day",
         "notify_12": "🔔 12 times a day",
         "setup_complete": "✅ Great! The bot is now set up for you. Let's start learning!",
+        "support_request": "📩 Please type your question, and an admin will reply soon!",
+        "support_sent": "✅ Your message has been sent to support!",
         "word_set": [
             ["Apple", "Cat", "Dog", "Sun", "Moon", "Table", "Chair", "Car"],
             ["Water", "Fire", "Wind", "Earth", "Sky", "Flower", "Tree", "Mountain"],

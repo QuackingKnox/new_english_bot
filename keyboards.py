@@ -1,4 +1,4 @@
-from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
+from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton, ReplyKeyboardMarkup, KeyboardButton
 from locals import LOCALS
 
 AVAILABLE_LANGUAGES = {
@@ -9,47 +9,32 @@ AVAILABLE_LANGUAGES = {
     "fr": "Français 🇫🇷"
 }
 
-
 def generate_language_keyboard(selected_lang=None, stage="native", user_lang="en"):
-    """
-    Создаёт клавиатуру для выбора родного или изучаемого языка.
-    - selected_lang: код выбранного языка (если есть)
-    - stage: "native" (родной язык) или "learning" (изучаемый язык)
-    - user_lang: язык интерфейса пользователя (по умолчанию "en")
-    """
     keyboard = InlineKeyboardMarkup(row_width=2)
+    buttons = [
+        InlineKeyboardButton(
+            name + (" ✅" if code == selected_lang else ""),
+            callback_data=f"{stage}_{code}"
+        )
+        for code, name in AVAILABLE_LANGUAGES.items()
+    ]
+    keyboard.add(*buttons)
 
-    # Добавляем кнопки с языками
-    for code, name in AVAILABLE_LANGUAGES.items():
-        if selected_lang == code:
-            name += " ✅"  # Добавляем галочку к выбранному языку
-        keyboard.add(InlineKeyboardButton(name, callback_data=f"{stage}_{code}"))
-
-    # Локализованные кнопки "Пропустить" и "Далее"
-    skip_text = LOCALS[user_lang]["button_skip"]
-    next_text = LOCALS[user_lang]["button_next"]
-
+    # Добавляем кнопки "Пропустить" и "Далее"
+    keyboard.add(InlineKeyboardButton(LOCALS[user_lang]["button_skip"], callback_data=f"{stage}_skip"))
     if selected_lang:
-        keyboard.add(InlineKeyboardButton(next_text, callback_data=f"{stage}_confirm"))
-    else:
-        keyboard.add(InlineKeyboardButton(skip_text, callback_data=f"{stage}_skip"))
+        keyboard.add(InlineKeyboardButton(LOCALS[user_lang]["button_next"], callback_data=f"{stage}_confirm"))
 
     return keyboard
-
 
 def main_menu_keyboard(user_lang="en"):
-    """Создаёт главное меню с широкими кнопками."""
-    keyboard = InlineKeyboardMarkup(row_width=1)  # ✅ 1 кнопка в ряду для ширины
-
-    texts = LOCALS[user_lang]  # Берём текст кнопок на нужном языке
-
-    keyboard.add(InlineKeyboardButton(texts["menu_dict"], callback_data="dict"))
-    keyboard.add(InlineKeyboardButton(texts["menu_subscription"], callback_data="subscription"))
-    keyboard.add(InlineKeyboardButton(texts["menu_invite"], callback_data="invite"))
-    keyboard.add(InlineKeyboardButton(texts["menu_support"], callback_data="support"))
-
-    return keyboard
-
+    """Создаёт главное меню с кнопками для пользователя."""
+    return ReplyKeyboardMarkup(resize_keyboard=True).add(
+        KeyboardButton(LOCALS[user_lang]["menu_dict"]),
+        KeyboardButton(LOCALS[user_lang]["menu_subscription"]),
+        KeyboardButton(LOCALS[user_lang]["menu_invite"]),
+        KeyboardButton(LOCALS[user_lang]["menu_support"])
+    )
 
 def generate_words_keyboard(selected_words, page=0, ui_lang="en", learning_lang="en"):
     """Создаёт клавиатуру выбора слов (по 8 слов, с кнопками 'Далее' и 'Завершить')."""
@@ -73,9 +58,16 @@ def generate_words_keyboard(selected_words, page=0, ui_lang="en", learning_lang=
 
 
 def generate_notifications_keyboard(user_lang="en"):
-    """Создаёт клавиатуру выбора количества уведомлений"""
+    """Создаёт клавиатуру выбора количества уведомлений."""
     return InlineKeyboardMarkup().add(
         InlineKeyboardButton(LOCALS[user_lang]["notify_3"], callback_data="notify_3"),
         InlineKeyboardButton(LOCALS[user_lang]["notify_6"], callback_data="notify_6"),
         InlineKeyboardButton(LOCALS[user_lang]["notify_12"], callback_data="notify_12")
     )
+
+def get_reply_keyboard(user_id: int):
+    """Создает кнопку 'Ответить' для администратора"""
+    keyboard = InlineKeyboardMarkup()
+    button = InlineKeyboardButton("✉ Ответить", callback_data=f"reply_{user_id}")
+    keyboard.add(button)
+    return keyboard

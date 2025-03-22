@@ -65,14 +65,21 @@ async def create_tables():
 
 
 async def get_user(user_id):
-    """Возвращает данные пользователя, включая язык интерфейса и изучаемый язык."""
     async with aiosqlite.connect(DB_PATH) as db:
+        db.row_factory = aiosqlite.Row
         async with db.execute(
-            "SELECT user_id, ui_lang, learning_lang, timezone, preferences FROM users WHERE user_id = ?", (user_id,)
+            "SELECT * FROM users WHERE user_id = ?", (user_id,)
         ) as cursor:
             user = await cursor.fetchone()
-            return user  # Вернёт (user_id, ui_lang, learning_lang, timezone, preferences) или None
-
+            if user is None:
+                return {
+                    "user_id": user_id,
+                    "ui_lang": "en",
+                    "learning_lang": "en",
+                    "timezone": 0,
+                    "preferences": "",
+                }
+            return dict(user)  # Преобразуем Row в обычный словарь
 
 
 async def add_user(user_id, username=None):
